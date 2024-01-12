@@ -10,12 +10,13 @@ public class MainPhase {
     
     public static void runMainPhase(RobotController rc) throws GameActionException {
     
-        if(rc.canBuyGlobal(GlobalUpgrade.ACTION)) {
-            rc.buyGlobal(GlobalUpgrade.ACTION);
-        }
-        else if(rc.canBuyGlobal(GlobalUpgrade.CAPTURING)) {
+        // Buy global upgrade (prioritize capturing)
+        if(rc.canBuyGlobal(GlobalUpgrade.CAPTURING)) {
             rc.buyGlobal(GlobalUpgrade.CAPTURING);
         } 
+        else if(rc.canBuyGlobal(GlobalUpgrade.ACTION)) {
+            rc.buyGlobal(GlobalUpgrade.ACTION);
+        }
 
         //attack enemies, prioritizing enemies that have your flag
         RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(-1, rc.getTeam().opponent());
