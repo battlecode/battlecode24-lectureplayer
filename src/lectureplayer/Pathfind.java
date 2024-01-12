@@ -13,10 +13,12 @@ public class Pathfind {
         
         // move forward if possible, if not, try to go right or left but still towards target
         Direction dir = rc.getLocation().directionTo(loc);
+
+        if(fill & rc.canFill(rc.getLocation().add(dir))) rc.fill(rc.getLocation().add(dir));
+
         if(rc.canMove(dir)) rc.move(dir);
         else if(rc.canMove(dir.rotateLeft())) rc.move(dir.rotateLeft());
         else if(rc.canMove(dir.rotateRight())) rc.move(dir.rotateRight());
-        else if(fill & rc.canFill(rc.getLocation().add(dir))) rc.fill(rc.getLocation().add(dir));
         else {
             Direction randDir = RobotPlayer.directions[RobotPlayer.random.nextInt(8)];
             if(rc.canMove(randDir)) rc.move(randDir);
