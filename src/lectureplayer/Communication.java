@@ -61,7 +61,7 @@ public class Communication {
         //return Team.NEUTRAL;
 
         int value = rc.readSharedArray(idx);
-        int teamNum = (value % 4) >> 1;
+        int teamNum = (value >> 2) & 1;
         Team team = teamNum == 0 ? Team.A : Team.B;
         return team;
     }
