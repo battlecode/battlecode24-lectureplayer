@@ -12,11 +12,13 @@ public class MainPhase {
 
     public static void runMainPhase(RobotController rc) throws GameActionException {
         flagIDs = new int[6];
-        // Buy global upgrade (prioritize capturing)
-        if (rc.canBuyGlobal(GlobalUpgrade.CAPTURING)) {
+
+        // Buy global upgrade (prioritize attack)
+        if(rc.canBuyGlobal(GlobalUpgrade.ATTACK)) {
+            rc.buyGlobal(GlobalUpgrade.ATTACK);
+        } 
+        else if(rc.canBuyGlobal(GlobalUpgrade.CAPTURING)) {
             rc.buyGlobal(GlobalUpgrade.CAPTURING);
-        } else if (rc.canBuyGlobal(GlobalUpgrade.ACTION)) {
-            rc.buyGlobal(GlobalUpgrade.ACTION);
         }
 
         if (RobotPlayer.personalID == 0) {
