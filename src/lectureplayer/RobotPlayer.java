@@ -7,7 +7,7 @@ import battlecode.common.*;
 public class RobotPlayer {
 
     public static Random random = null;
-    public static int personalID = 0;
+    public static int personalID = -1;
 
     public static Direction[] directions = {
             Direction.NORTH,
@@ -23,7 +23,7 @@ public class RobotPlayer {
     public static void run(RobotController rc) throws GameActionException {
         while (true) {
             try {
-                if (rc.canWriteSharedArray(0, 0)) {
+                if (personalID == -1 && rc.canWriteSharedArray(0, 0)) {
                     personalID = rc.readSharedArray(63);
                     rc.writeSharedArray(63, personalID + 1);
                 }
