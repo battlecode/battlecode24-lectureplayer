@@ -6,9 +6,11 @@ public class Communication {
 
     static final int LAST_FLAG_IDX = 5;
     static final int START_ENEMY_IDX = 6;
-    static final int LAST_ENEMY_IDX = 62;
+    static final int LAST_ENEMY_IDX = 61;
 
     static final int ENEMY_CLUSTER_RADIUS_SQ = 20;
+
+    static final int FLAG_WARNING_IDX = 62;
 
     static int numClusters = 0;
 
@@ -20,7 +22,7 @@ public class Communication {
                 int enemyGroupSize = numEnemies <= 1 ? numEnemies : numEnemies <= 4 ? 2 : 3;
                 int value = locationToInt(rc, enemyLoc) * 16 + enemyGroupSize * 4 + 1;
 
-                if (rc.canWriteSharedArray(idx, value)) {
+                if (rc.canWriteSharedArray(idx, value) && idx <= LAST_ENEMY_IDX) {
                     rc.writeSharedArray(idx, value);
                 }
                 return;
@@ -28,12 +30,14 @@ public class Communication {
         }
 
         int newIdx = START_ENEMY_IDX + numClusters;
-        numClusters++;
-        int enemyGroupSize = numEnemies <= 1 ? numEnemies : numEnemies <= 4 ? 2 : 3;
-        int value = locationToInt(rc, loc) * 16 + enemyGroupSize * 4 + 1;
-        
-        if (rc.canWriteSharedArray(newIdx, value)) {
-            rc.writeSharedArray(newIdx, value);
+        if (newIdx <= LAST_ENEMY_IDX) {
+            numClusters++;
+            int enemyGroupSize = numEnemies <= 1 ? numEnemies : numEnemies <= 4 ? 2 : 3;
+            int value = locationToInt(rc, loc) * 16 + enemyGroupSize * 4 + 1;
+
+            if (rc.canWriteSharedArray(newIdx, value)) {
+                rc.writeSharedArray(newIdx, value);
+            }
         }
     }
 
@@ -42,6 +46,14 @@ public class Communication {
     // last index: used for giving robots a personal ID
     public static void updateFlagInfo(RobotController rc, MapLocation loc, boolean isCarried, Team team, int idx) throws GameActionException {
         int value = locationToInt(rc, loc) * 16 + teamToInt(team) * 4 + (isCarried ? 1 : 0) * 2 + 1;
+
+        if (rc.canWriteSharedArray(idx, value)) {
+            rc.writeSharedArray(idx, value);
+        }
+    }
+
+    public static void updateWarningInfo(RobotController rc, MapLocation loc, int idx) throws GameActionException {
+        int value = locationToInt(rc, loc) * 16 + 1;
 
         if (rc.canWriteSharedArray(idx, value)) {
             rc.writeSharedArray(idx, value);
@@ -64,6 +76,13 @@ public class Communication {
         int teamNum = (value >> 2) & 1;
         Team team = teamNum == 0 ? Team.A : Team.B;
         return team;
+    }
+
+    public static boolean getCarried(RobotController rc, int idx) throws GameActionException{
+        int value = rc.readSharedArray(idx);
+        int carriedNum = (value >> 1) & 1;
+        boolean carried = carriedNum == 1;
+        return carried;
     }
 
     public static int teamToInt(Team team) {
